@@ -83,6 +83,8 @@ app.get("/", controllerUser.home);
 app.get("/quan-nam", controllerUser.quannam);
 app.get("/ao-nam", controllerUser.aonam);
 app.get("/cart/:proid", controllerUser.cart);
+app.get("/ao-nam/cart/:id", controllerUser.aocart);
+app.get("/quan-nam/cart/:id", controllerUser.quancart);
 app.get("/view-cart/:id", controllerUser.viewCart)
 app.get("/view-cart/delete/:id", controllerUser.deleteviewCart)
 app.get("/view-cart/update/plus/:id", controllerUser.updatePlusViewCart)
