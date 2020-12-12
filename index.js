@@ -31,7 +31,9 @@ app.use(flash());
 
 app.set("view engine", "ejs");
 app.set("views", "./views")
-app.listen(PORT)
+app.listen(PORT,() => {
+  console.log("conect port success")
+})
 
 //connect mongoosejs
 var mongoose = require('mongoose');
