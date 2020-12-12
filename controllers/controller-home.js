@@ -33,7 +33,7 @@ var upload = multer({
 }).single("imgPro");
 
 module.exports.home = function (req, res) {
-    Session.findOne({ _id: req.session.views }, function (err, datas) {
+    Session.findOne(function (err, datas) {
         if (err) {
             res.json({ "kq": 0, "errMsg": err });
         } else {
@@ -143,7 +143,7 @@ module.exports.cart = function (req, res) {
 
 }
 module.exports.viewCart = function (req, res) {
-    Session.findOne({ _id: req.session.views }, function (err, data) {
+    Session.findOne(function (err, data) {
         if (err) {
             console.log("loi find")
         } else {
