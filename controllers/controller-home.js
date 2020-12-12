@@ -33,15 +33,15 @@ var upload = multer({
 }).single("imgPro");
 
 module.exports.home = function (req, res) {
-    Session.findOne(function (err, datas) {
+    Product.find(function (err, data) {
         if (err) {
             res.json({ "kq": 0, "errMsg": err });
         } else {
-            Product.find(function (err, data) {
+            Session.findOne({ _id: req.session.views }, function (err, datas) {
                 if (err) {
                     res.json({ "kq": 1, "errMsg": err });
                 } else {
-                    res.render("./paperuser/home", { listSession: datas, listproduct: data, errs: req.flash('message') });
+                    res.render("./paperuser/home", { listproduct: data, listSession: datas, errs: req.flash('message') });
                 }
             })
         }
@@ -56,7 +56,7 @@ module.exports.quannam = function (req, res) {
                 if (err) {
                     res.json({ "kq": 0, "errMsg": err });
                 } else {
-                    res.render('./paperuser/quannam', { listproduct: data, listdata: data1 })
+                    res.render('./paperuser/quannam', { listproduct: data, listdata: data1, errs: req.flash('message') })
                 }
             });
         }
@@ -71,7 +71,7 @@ module.exports.aonam = function (req, res) {
                 if (err) {
                     res.json({ "kq": 0, "errMsg": err });
                 } else{
-                    res.render('./paperuser/aonam', { listproduct: data, listdata:data1 });
+                    res.render('./paperuser/aonam', { listproduct: data, listdata:data1, errs: req.flash('message') });
                 }
             })
         }
@@ -142,16 +142,150 @@ module.exports.cart = function (req, res) {
     })
 
 }
-module.exports.viewCart = function (req, res) {
-    Session.findOne(function (err, data) {
+
+module.exports.quancart = function(req, res){
+    var pro_ids = req.params.id;
+    
+    let sessionss = req.session.views;
+    if (!sessionss) {
+        res.redirect('/quan-nam');
+    }
+    Session.findOne({ _id: sessionss }, function (err, data) {
         if (err) {
-            console.log("loi find")
+            res.send("err find")
         } else {
-            if (err) {
-                console.log("err find cart")
-            } else {
-                res.render("./paperuser/view-cart", { listcart: data })
-            }
+            var datas = data
+            Product.findOne({ _id: pro_ids }, function (err, dataPro) {
+                if (err) {
+                    res.send(req.params.id)
+                } else {
+                    var dataPros = dataPro
+                    if (datas.cart.length == 0) {
+                        datas.cart.push({
+                            Product_id: pro_ids,
+                            namePro: dataPros.nameProduct,
+                            imagePro: dataPros.imgProduct,
+                            Quality: 1,
+                            Units: dataPros.priceProduct,
+                            Price: dataPros.priceProduct
+                        })
+                        datas.totalPrice = dataPros.priceProduct
+                        datas.save()
+                        req.flash('message', 'Thêm vào giỏ hàng thành công');
+                        res.redirect('/quan-nam')
+                        return;
+                    } else {
+                        var indexs = datas.cart.findIndex(indexObj => indexObj.Product_id == pro_ids);
+                        if (indexs == -1) {
+                            var qualitys = datas.cart[indexs];
+                            datas.cart.push({
+                                Product_id: pro_ids,
+                                namePro: dataPros.nameProduct,
+                                imagePro: dataPros.imgProduct,
+                                Quality: 1,
+                                Units: dataPros.priceProduct,
+                                Price: dataPros.priceProduct
+                            });
+                            datas.totalPrice += dataPros.priceProduct;
+                            datas.save();
+                            req.flash('message', 'Thêm vào giỏ hàng thành công');
+                            res.redirect('/quan-nam')
+                            return;
+                        } else {
+                            var qualitys = datas.cart[indexs];
+                            qualitys.Quality += 1;
+                            qualitys.Price = qualitys.Quality * qualitys.Units
+                            datas.totalPrice += dataPros.priceProduct;
+                            datas.save()
+                            req.flash('message', 'Thêm vào giỏ hàng thành công');
+                            res.redirect('/quan-nam')
+                            return;
+                        }
+                    }
+                }
+            })
+
+        }
+    })
+}
+
+module.exports.aocart = function(req, res){
+    var pro_ids = req.params.id;   
+    let sessionss = req.session.views;
+    if (!sessionss) {
+        res.redirect('/ao-nam');
+    }
+    Session.findOne({ _id: sessionss }, function (err, data) {
+        if (err) {
+            res.send("err find")
+        } else {
+            var datas = data
+            Product.findOne({ _id: pro_ids }, function (err, dataPro) {
+                if (err) {
+                    res.send(req.params.id)
+                } else {
+                    var dataPros = dataPro
+                    if (datas.cart.length == 0) {
+                        datas.cart.push({
+                            Product_id: pro_ids,
+                            namePro: dataPros.nameProduct,
+                            imagePro: dataPros.imgProduct,
+                            Quality: 1,
+                            Units: dataPros.priceProduct,
+                            Price: dataPros.priceProduct
+                        })
+                        datas.totalPrice = dataPros.priceProduct
+                        datas.save()
+                        req.flash('message', 'Thêm vào giỏ hàng thành công');
+                        res.redirect('/ao-nam')
+                        return;
+                    } else {
+                        var indexs = datas.cart.findIndex(indexObj => indexObj.Product_id == pro_ids);
+                        if (indexs == -1) {
+                            var qualitys = datas.cart[indexs];
+                            datas.cart.push({
+                                Product_id: pro_ids,
+                                namePro: dataPros.nameProduct,
+                                imagePro: dataPros.imgProduct,
+                                Quality: 1,
+                                Units: dataPros.priceProduct,
+                                Price: dataPros.priceProduct
+                            });
+                            datas.totalPrice += dataPros.priceProduct;
+                            datas.save();
+                            req.flash('message', 'Thêm vào giỏ hàng thành công');
+                            res.redirect('/ao-nam')
+                            return;
+                        } else {
+                            var qualitys = datas.cart[indexs];
+                            qualitys.Quality += 1;
+                            qualitys.Price = qualitys.Quality * qualitys.Units
+                            datas.totalPrice += dataPros.priceProduct;
+                            datas.save()
+                            req.flash('message', 'Thêm vào giỏ hàng thành công');
+                            res.redirect('/ao-nam')
+                            return;
+                        }
+                    }
+                }
+            })
+
+        }
+    })
+}
+
+module.exports.viewCart = function (req, res) {
+    Product.find(function (err, data) {
+        if (err) {
+            res.json({ "kq": 0, "errMsg": err });
+        } else {
+            Session.findOne({ _id: req.session.views }, function (err, datas) {
+                if (err) {
+                    res.json({ "kq": 1, "errMsg": err });
+                } else {
+                    res.render("./paperuser/view-cart", { listproduct: data, listcart: datas })
+                }
+            })
         }
     })
 
