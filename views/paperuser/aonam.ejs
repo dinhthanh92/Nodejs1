@@ -32,6 +32,11 @@
       </nav>
     <div class="header-body">
         <strong style="font-size: 30px">Áo nam</strong><br>
+        <% if(errs.length > 0){{%>
+          <div style="text-align: center; height: 20px;" class="alert alert-success" >
+            <p style="margin-top: -10px;"><%= errs %></p>
+          </div>
+        <%  }} %>
         <div class="header-body-view">
             <ul>
             <% listproduct.forEach(function(Product){ %>  
@@ -41,7 +46,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><%- Product.nameProduct %></h5>
                             <p class="card-text"><%- Product.priceProduct %>.</p>
-                            <a href="/cart/<%- Product._id %>" class="btn btn-primary">Thêm vào giỏ hàng</a>
+                            <a href="ao-nam/cart/<%- Product._id %>" class="btn btn-primary">Thêm vào giỏ hàng</a>
                         </div>
                     </div>
                 </li>
