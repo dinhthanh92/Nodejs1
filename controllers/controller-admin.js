@@ -69,15 +69,27 @@ module.exports.logout = function (req, res) {
     res.redirect("/login")
 }
 module.exports.deleteuser = function (req, res) {
-    User.deleteOne({ _id: req.params.id }, function (err) {
-        if (err) {
-            req.flash('message', 'Xóa thất bại');
-            res.redirect('/user')
-            return;
+    User.findOne({_id: req.cookies.loginid}, function(err, data){
+        if (err){
+            res.json({ "kq": 1, "errMsg": err });
         } else {
-            req.flash('message', 'Xóa thành công');
-            res.redirect('/user')
-            return;
+            if (data._id == req.params.id){
+                req.flash('message', 'Tài khoản đang hoạt động không thể xóa');
+                res.redirect('/user')
+                return;
+            } else {
+                User.deleteOne({ _id: req.params.id }, function (err) {
+                    if (err) {
+                        req.flash('message', 'Xóa thất bại');
+                        res.redirect('/user')
+                        return;
+                    } else {
+                        req.flash('message', 'Xóa thành công');
+                        res.redirect('/user')
+                        return;
+                    }
+                })
+            }
         }
     })
 }
