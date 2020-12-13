@@ -105,7 +105,12 @@ module.exports.postdangky = function (req, res) {
                         req.flash('message', 'username đã tồn tại');
                         res.redirect('/dangky')
                         return;
-                    } else (
+                    } 
+                    if(req.body.username === "" || req.body.password === ""){
+                        req.flash('message', 'username và password không được để trống');
+                        res.redirect('/dangky')
+                        return;
+                    }
                         user.save(function (err) {
                             if (err) {
                                 req.flash('message', 'Đăng ký không thành công');
@@ -117,7 +122,7 @@ module.exports.postdangky = function (req, res) {
                                 return;
                             }
                         })
-                    )
+                    
                 }
             })
         }
